@@ -1,12 +1,14 @@
 #!/usr/bin/env node
+import { fileURLToPath } from 'url';
+import path from 'path';
 
-/**
- * Module dependencies.
- */
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+import { ApolloServer } from '@apollo/server';
+import { startStandaloneServer } from '@apollo/server/standalone';
 
-var app = require('../app');
-var debug = require('debug')('todosexpress:server');
-var http = require('http');
+import app from '../app.js';
+import {resolvers, typeDefs} from "../shema.js";
 
 /**
  * Get port from environment and store in Express.
@@ -19,15 +21,24 @@ app.set('port', port);
  * Create HTTP server.
  */
 
-var server = http.createServer(app);
+//var server = http.createServer(app);
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+});
 
 /**
  * Listen on provided port, on all network interfaces.
  */
 
-server.listen(port);
-server.on('error', onError);
-server.on('listening', onListening);
+//server.listen(port);
+const { url } = await startStandaloneServer(server, {
+  listen: { port: port },
+});
+
+console.log(`🚀  Server ready at: ${url}`);
+//server.on('error', onError);
+//server.on('listening', onListening);
 
 /**
  * Normalize a port into a number, string, or false.

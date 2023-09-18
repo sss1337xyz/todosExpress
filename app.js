@@ -1,13 +1,14 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+import express from 'express';
+import path from 'path';
+import cookieParser from 'cookie-parser';
+import logger from 'morgan';
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
-var todosRouter = require('./routes/todos');
+import indexRouter from './routes/index.js';
+import usersRouter from './routes/users.js';
+import todosRouter from './routes/todos.js';
 
-var app = express();
+const app = express();
+const __dirname = path.dirname(import.meta.url);
 
 app.use(logger('dev'));
 app.use(express.json());
@@ -19,4 +20,4 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/todos', todosRouter);
 
-module.exports = app;
+export default app;

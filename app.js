@@ -3,9 +3,9 @@ import path from 'path';
 import cookieParser from 'cookie-parser';
 import logger from 'morgan';
 
-import indexRouter from './routes/index.js';
-import usersRouter from './routes/users.js';
-import todosRouter from './routes/todos.js';
+import indexRouter from './src/routes/index.js';
+import usersRouter from './src/routes/users.js';
+import todosRouter from './src/routes/todos.js';
 
 const app = express();
 const __dirname = path.dirname(import.meta.url);

@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "migrate": "prisma migrate dev",
-    "start": "nodemon bin/www.js"
+    "start": "nodemon bin/www.js",
+    "build": "node bin/www.js"
   },
   "dependencies": {
     "@apollo/server": "^4.9.3",
@@ -14,7 +15,8 @@
     "debug": "~2.6.9",
     "express": "~4.16.1",
     "graphql": "^16.8.0",
-    "morgan": "~1.9.1"
+    "morgan": "~1.9.1",
+    "vercel": "^32.2.5"
   },
   "devDependencies": {
     "nodemon": "^3.0.1",

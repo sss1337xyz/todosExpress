@@ -1,10 +1,17 @@
-import prisma from "./prisma/prisma.js";
+import prisma from "../../prisma/prisma.js";
+import {createTodo, deleteTodo, setReadyTodo} from "./mutations/Todos/index.js";
 
 
 export const typeDefs = `#graphql
   # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
 
-  # This "Book" type defines the queryable fields for every book in our data source.
+  type Users {
+      id: Int!,
+      username: String!,
+      password: String!
+  }
+
+  # This "Todos" type defines the queryable fields for every Todos in our data source.
   type Todos {
       id: Int!,
       title: String!,
@@ -25,11 +32,18 @@ export const typeDefs = `#graphql
   type Mutation {
       createTodo(title: String!, description: String, ready: Boolean): Todos,
       deleteTodo(id: Int!): Todos,
-      setReadyTodo(id: Int!, ready: Boolean!): Todos
+      setReadyTodo(id: Int!, ready: Boolean!): Todos,
+
+      login(username: String!, password: String!): LoginResponse!
+      register(username: String!, password: String!): LoginResponse!
   }
 
   input TodoFilter {
       deletedAt: Boolean
+  }
+
+  type LoginResponse {
+    token: String!
   }
 
   # The "DateTime" scalar type represents a 
@@ -51,40 +65,8 @@ export const resolvers = {
         },
     },
     Mutation: {
-        createTodo: async (parent, args) => {
-            const newTodo = await prisma.todos.create({
-                data: {
-                    title: args.title,
-                    description: args.description,
-                    ready: args.ready
-                }
-            });
-
-            return newTodo;
-        },
-        deleteTodo: async (parent, args) => {
-            const deleted = await prisma.todos.update({
-                where: {
-                    id: args.id
-                },
-                data: {
-                    deletedAt: new Date()
-                }
-            });
-
-            return deleted;
-        },
-        setReadyTodo: async (parent, args) => {
-            const updatedTodo = await prisma.todos.update({
-                where: {
-                    id: args.id
-                },
-                data: {
-                    ready: args.ready
-                }
-            });
-
-            return updatedTodo;
-        }
+        createTodo: createTodo,
+        deleteTodo: deleteTodo,
+        setReadyTodo: setReadyTodo
     }
 };

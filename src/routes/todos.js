@@ -1,6 +1,6 @@
 import express from 'express';
 var router = express.Router();
-import prisma from '../prisma/prisma.js';
+import prisma from '../../prisma/prisma.js';
 
 /* GET users listing. */
 router.get('/', async function(req, res, next) {

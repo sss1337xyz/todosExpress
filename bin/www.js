@@ -8,7 +8,7 @@ import { ApolloServer } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 
 import app from '../app.js';
-import {resolvers, typeDefs} from "../shema.js";
+import {resolvers, typeDefs} from "../src/shema/shema.js";
 
 /**
  * Get port from environment and store in Express.

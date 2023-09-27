@@ -2,10 +2,9 @@ import prisma from "../../prisma/prisma.js";
 import {createTodo, deleteTodo, setReadyTodo} from "./mutations/Todos/index.js";
 import bcrypt from 'bcrypt';
 import jwt from "jsonwebtoken";
-import { JWT_SECRET_KEY } from "../../config.js";
 const saltRounds = 10;
 
-
+const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
 export const typeDefs = `#graphql
   # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
 

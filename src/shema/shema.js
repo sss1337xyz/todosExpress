@@ -2,6 +2,8 @@ import prisma from "../../prisma/prisma.js";
 import {createTodo, deleteTodo, setReadyTodo} from "./mutations/Todos/index.js";
 import bcrypt from 'bcrypt';
 import jwt from "jsonwebtoken";
+import {authenticateMiddleware} from "./middlewares/index.js";
+import {login, register} from "./mutations/Authorization/index.js";
 const saltRounds = 10;
 
 const JWT_SECRET_KEY = process.env.JWT_SECRET_KEY;
@@ -21,7 +23,8 @@ export const typeDefs = `#graphql
       description: String,
       ready: Boolean!,
       createdAt: DateTime!,
-      deletedAt: DateTime
+      deletedAt: DateTime,
+      userId: Int!
   }
 
   # The "Query" type is special: it lists all of the available queries that
@@ -42,7 +45,9 @@ export const typeDefs = `#graphql
   }
 
   input TodoFilter {
-      deletedAt: Boolean
+      deletedAt: Boolean,
+      limit: Int,
+      offset: Int
   }
 
   type LoginResponse {
@@ -55,11 +60,14 @@ export const typeDefs = `#graphql
 
 export const resolvers = {
     Query: {
-        allTodos: async (parent, args) => {
+        allTodos: async ( parent, args, contextValue) => {
             const filter = args.filter || {};
 
             const todos = await prisma.todos.findMany({
+                take: filter.limit,
+                skip: filter.offset,
                 where: {
+                    userId: args.user.id,
                     deletedAt: filter.deletedAt === true ? undefined : null,
                 }
             })
@@ -71,52 +79,7 @@ export const resolvers = {
         createTodo: createTodo,
         deleteTodo: deleteTodo,
         setReadyTodo: setReadyTodo,
-        register: async (parent, args) => {
-            try {
-                const user = await prisma.user.findFirst({
-                    where: {
-                        username: args.username,
-                    }
-                });
-
-                if (!user) {
-                    const hashedPassword = await bcrypt.hash(args.password, saltRounds);
-                    const user = await prisma.user.create({
-                        data: {
-                            username: args.username,
-                            password: hashedPassword
-                        }
-                    });
-                    return user;
-                }else {
-                    throw new Error("Пользователь уже существует");
-                }
-            } catch (error) {
-                // Обработка ошибки bcrypt.hash
-                console.error(error);
-                //throw new Error("Ошибка при хешировании пароля");
-            }
-        },
-        login: async (parent, args) => {
-            const user = await prisma.user.findFirst({
-                where: {
-                    username: args.username,
-                }
-            });
-
-            const validPassword = await bcrypt.compare(args.password, user.password);
-            if(!validPassword) {
-                throw new Error("Неверный пароль");
-            }
-            const payload = {
-                id: user.id,
-                username: user.username
-            }
-            const token = jwt.sign(payload, JWT_SECRET_KEY);
-
-            return {
-                token: token
-            }
-        },
+        register: register,
+        login: login
     }
 };

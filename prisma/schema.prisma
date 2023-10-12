@@ -15,6 +15,8 @@ model User {
   username      String  @unique
   password      String
 
+  todos         Todos[] // Добавляем связь между User и Todos
+
   @@map(name: "users")
 }
 
@@ -25,5 +27,7 @@ model Todos {
   ready         Boolean @default(false)
   createdAt     DateTime @default(now())
   deletedAt     DateTime?
+  userId        Int    // Добавляем поле userId для связи с пользователем
+  user          User   @relation(fields: [userId], references: [id]) // Создаем связь с моделью User
 }
 

@@ -9,6 +9,9 @@ import { startStandaloneServer } from '@apollo/server/standalone';
 
 import app from '../app.js';
 import {resolvers, typeDefs} from "../src/shema/shema.js";
+import {applyMiddleware} from "graphql-middleware";
+import {makeExecutableSchema} from "graphql-tools";
+import {Middleware} from "../src/shema/middlewares/index.js";
 
 /**
  * Get port from environment and store in Express.
@@ -20,11 +23,13 @@ app.set('port', port);
 /**
  * Create HTTP server.
  */
+const schema = makeExecutableSchema({ typeDefs, resolvers })
+const schemaWithMiddleware = applyMiddleware(schema, Middleware)
+
 
 //var server = http.createServer(app);
 const server = new ApolloServer({
-  typeDefs,
-  resolvers,
+  schema: schemaWithMiddleware,
 });
 
 /**
@@ -33,8 +38,11 @@ const server = new ApolloServer({
 
 //server.listen(port);
 const { url } = await startStandaloneServer(server, {
+  context: async ({ req }) => { return req },
   listen: { port: port },
 });
+
+
 
 console.log(`🚀  Server ready at: ${url}`);
 //server.on('error', onError);

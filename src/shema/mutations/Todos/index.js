@@ -1,11 +1,13 @@
 import prisma from "../../../../prisma/prisma.js";
 
 export async function createTodo (parent, args)  {
+    console.log(args)
     const newTodo = await prisma.todos.create({
         data: {
             title: args.title,
             description: args.description,
-            ready: args.ready
+            ready: args.ready,
+            userId: args.user.id
         }
     });
 
